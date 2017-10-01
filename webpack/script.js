@@ -21,7 +21,7 @@ module.exports = {
         'react',
       ],
       plugins: [
-        // 'inferno',
+        'jsx-control-statements',
         'transform-class-properties',
         [
           renamejsxprops, {
@@ -55,8 +55,6 @@ module.exports = {
       new ProvidePlugin(
         Object.assign(
           {
-            // Inferno: 'inferno', // Babel JSX pragma defaults to React.createElement
-            // React: 'inferno-compat', // Babel JSX pragma defaults to React.createElement
             React: 'react', // Babel JSX pragma defaults to React.createElement
             classNames: 'classnames',
           },

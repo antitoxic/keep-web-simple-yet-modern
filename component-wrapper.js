@@ -1,5 +1,9 @@
 class COMPONENT_NAME extends React.Component {
   render() {
-    return renderComponent(this.props);
+    const {props} = this;
+    return renderComponent({
+      ...props,
+      content: props.children
+    });
   }
 }

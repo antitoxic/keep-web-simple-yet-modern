@@ -1,7 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const template = require('babel-template');
-const getComponent = template(fs.readFileSync(path.resolve(__dirname, './component-wrapper.js'))+'');
+const getComponent = template(fs.readFileSync(path.resolve(
+  __dirname,
+  './component-wrapper.js',
+)) + '');
 
 function getDefaultImport({ source, specifiers }) {
   const defaultImport = specifiers.find(
@@ -40,7 +43,9 @@ const STYLE_IMPORT_NAME = 'style';
  * Rename all relative default imports to capital letters
  * Visit all identifiers, if they match capitalize them
  */
-
+const alwaysCapitalize = new Set([
+  'choose', 'if', 'when', 'otherwise', 'for', 'with',
+]);
 const initialImportInfo = () => (
   {
     defaultImportOriginalNames: new Set(),
@@ -121,7 +126,12 @@ module.exports = function ({ types: t }) {
     JSXElement(path, { file }) {
       const context = this[PLUGIN_NAME];
       const { name } = path.node.openingElement.name;
-      if ( !context.defaultImportOriginalNames.has(name) ) return;
+      if (
+        !context.defaultImportOriginalNames.has(name) ||
+        !alwaysCapitalize.has(name)
+      ) {
+        return;
+      }
       path.node.openingElement.name.name = capitalize(name);
       if ( path.node.closingElement ) {
         path.node.closingElement.name.name = capitalize(name);
@@ -158,12 +168,14 @@ module.exports = function ({ types: t }) {
         !t.isArrowFunctionExpression(val) ) {
         return;
       }
-      path.insertBefore(t.variableDeclaration("const", [t.variableDeclarator(
-        t.identifier('renderComponent'),
-        val
-      )]
+      path.insertBefore(t.variableDeclaration('const', [
+          t.variableDeclarator(
+            t.identifier('renderComponent'),
+            val,
+          ),
+        ],
       ));
-      path.node.declaration = getComponent({COMPONENT_NAME: t.identifier('heyyyaa')});
+      path.node.declaration = getComponent({ COMPONENT_NAME: t.identifier('heyyyaa') });
     },
   };
 
