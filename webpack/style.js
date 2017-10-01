@@ -53,8 +53,7 @@ function createStyleLoader({
                              include,
                              exclude,
                            }) {
-  let loaders = [];
-  loaders.push('style-loader');
+  let loaders = ['style-loader'];
   loaders.push(css(cssModules));
   loaders = loaders.concat(extraLoaders);
 

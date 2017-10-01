@@ -1,5 +1,9 @@
 const path = require('path');
 const { ModuleConcatenationPlugin } = require('webpack').optimize;
+const {
+  NamedModulesPlugin,
+  HotModuleReplacementPlugin,
+} = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fragments = require('./index');
 
@@ -9,7 +13,7 @@ const PROJECT_DIR = process.cwd();
 const {
   NODE_ENV = 'development',
   BROWSERS,
-  CSS_FUCS
+  CSS_FUCS,
 } = process.env;
 const SRC_DIR = path.resolve(PROJECT_DIR, process.env.SRC_DIR);
 const cssFunctions = require(path.resolve(PROJECT_DIR, CSS_FUCS));
@@ -24,9 +28,13 @@ module.exports = {
   entry: fragments.io.input({ src: path.resolve(__dirname, './entry.js') }),
   output: fragments.io.output({
     path: BUILD_DIR,
+    hash: PRODUCTION,
   }),
   devtool: PRODUCTION ? 'source-map' : 'cheap-module-eval-source-map',
 
+  devServer: {
+    hotOnly: true,
+  },
   resolve: fragments.io.resolve({ src: SRC_DIR }),
   module: {
     rules: [
@@ -47,6 +55,7 @@ module.exports = {
     ],
   },
   plugins: [
+    DEV && new NamedModulesPlugin(),
     new ModuleConcatenationPlugin(),
     new HtmlWebpackPlugin({
       minify: PRODUCTION,
@@ -54,11 +63,12 @@ module.exports = {
     }),
     ...fragments.script.plugins({
       optimize: PRODUCTION,
-      env: { NODE_ENV, MAIN_FILE: SRC_DIR},
+      env: { NODE_ENV, MAIN_FILE: SRC_DIR },
     }),
     ...fragments.style.plugins({
       optimize: PRODUCTION,
       generateFile: PRODUCTION,
     }),
-  ],
+    DEV && new HotModuleReplacementPlugin(),
+  ].filter(p => Boolean(p)),
 };

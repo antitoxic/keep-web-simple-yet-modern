@@ -7,19 +7,19 @@ module.exports = {
     };
   },
 
-  output({ path, url = '/'}) {
+  output({ path, url = '/', hash = false }) {
     return {
       path,
       publicPath: url,
-      filename: '[name].js?[chunkhash]',
-      chunkFilename:'[name].chunk.js?[chunkhash]',
+      filename: `[name].js?${hash ? '[chunkhash]' : ''}`,
+      chunkFilename: `[name].chunk.js?${hash ? '[chunkhash]' : ''}`,
     };
   },
 
   resolve({ src, aliases }) {
     return {
       extensions: ['.js', '.jsx',],
-      modules: ['node_modules', src ],
+      modules: ['node_modules', src],
       plugins: [
         new DirectoryNamedWebpackPlugin({
           include: [src],
@@ -29,10 +29,9 @@ module.exports = {
         }),
       ],
       alias: Object.assign(
-        {
-        },
-        aliases
+        {},
+        aliases,
       ),
     };
-  }
+  },
 };
