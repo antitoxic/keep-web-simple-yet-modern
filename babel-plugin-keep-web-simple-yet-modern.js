@@ -127,7 +127,7 @@ module.exports = function ({ types: t }) {
       const context = this[PLUGIN_NAME];
       const { name } = path.node.openingElement.name;
       if (
-        !context.defaultImportOriginalNames.has(name) ||
+        !context.defaultImportOriginalNames.has(name) &&
         !alwaysCapitalize.has(name)
       ) {
         return;

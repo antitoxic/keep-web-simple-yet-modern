@@ -21,7 +21,6 @@ module.exports = {
         'react',
       ],
       plugins: [
-        'jsx-control-statements',
         'transform-class-properties',
         [
           renamejsxprops, {
@@ -33,6 +32,7 @@ module.exports = {
             onready: 'onComponentDidMount',
           },
         ],
+        'jsx-control-statements',
       ],
     };
     return [
