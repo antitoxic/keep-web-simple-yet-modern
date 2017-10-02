@@ -86,13 +86,7 @@ function capitalize(str) {
 
 module.exports = function ({ types: t }) {
 
-  const visitor = {
-    // start of file
-    Program: {
-      enter(path) {
-        this[PLUGIN_NAME] = initialImportInfo();
-      },
-    },
+  const innerVisitors = {
     /**
      * state is the second argument of visitors
      * ${state.file.opts.filename}
@@ -177,6 +171,20 @@ module.exports = function ({ types: t }) {
       ));
       path.node.declaration = getComponent({ COMPONENT_NAME: t.identifier('heyyyaa') });
     },
+  };
+
+  const visitor = {
+    // start of file
+    Program: {
+      enter(path, {file, opts}) {
+        path.traverse(innerVisitors, {
+          file,
+          opts,
+          [PLUGIN_NAME]: initialImportInfo()
+        });
+      },
+    },
+
   };
 
   return {

@@ -3,6 +3,7 @@ const {
   EnvironmentPlugin,
 } = require('webpack');
 const { UglifyJsPlugin } = require('webpack').optimize;
+const PrepackWebpackPlugin = require('prepack-webpack-plugin').default;
 const renamejsxprops = require('../babel-plugin-keep-web-simple-yet-modern');
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
             targets: { browsers },
             modules: false,
             useBuiltIns: 'entry',
-            // debug: true,
+            debug: true,
           },
         ],
         'react',
@@ -24,16 +25,24 @@ module.exports = {
         'transform-class-properties',
         [
           renamejsxprops, {
-            ["class"]: 'className',
-            autofocus: 'autoFocus',
-            ["for"]: 'htmlFor',
-            colspan: 'colSpan',
-            tabindex: 'tabIndex',
-            onready: 'onComponentDidMount',
-          },
+          ['class']: 'className',
+          autofocus: 'autoFocus',
+          ['for']: 'htmlFor',
+          colspan: 'colSpan',
+          tabindex: 'tabIndex',
+          onready: 'onComponentDidMount',
+        },
         ],
         'jsx-control-statements',
-      ],
+        ...(
+          true ? [
+            'transform-react-constant-elements',
+            'transform-react-inline-elements',
+            'transform-react-remove-prop-types',
+            'transform-react-pure-class-to-function',
+          ] : []
+        ),
+      ].filter(p => Boolean(p)),
     };
     return [
       {
@@ -66,6 +75,8 @@ module.exports = {
     if ( !optimize ) return basePlugins;
     return [
       ...basePlugins,
+      // ref: https://prepack.io/getting-started.html#options
+      new PrepackWebpackPlugin({}),
       new UglifyJsPlugin({
         compress: {
           warnings: false,
